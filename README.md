@@ -7,3 +7,4 @@
 ## How to calculate then?
 
 
+<img src= width="650" height="400"/>
