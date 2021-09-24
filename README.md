@@ -6,5 +6,7 @@
 
 ## How to calculate then?
 
+<img src="https://github.com/Jennie1021/interdisciplinary-index/blob/main/img/logic.jpg?raw=true" width="650" height="400"/>
 
-<img src= width="650" height="400"/>
+## Which administration can benefit from the index?
+* CTL(Center for Teaching and Learning) requested the index to nominate students who would share their various class taking experiences at orientations for new professors.
