@@ -114,7 +114,7 @@ def map_dept_cd(data, mapping, dept_cd='major_cd'):
 #        1. calculate interdisciplinary index by year
 #
 #    Args:
-#        1. gpa: gpa dataframe (columns = ['std_id','yr','term','cour_cd','gpa','major_cd','dept_cd','credit']
+#        1. gpa: gpa dataframe (columns = ['std_id','yr','term','cour_cd','gpa','major_cd','dept_cd','credit'])
 #        2. mapping: old, new dictionary
 #        3. dept_cd: 컬럼명 (default = 'major_cd')
 #        
@@ -178,7 +178,7 @@ def main(args):
     final_in = final_in[~final_in['mmajor_nm'].isin(['다전공없음','심화전공'])].iloc[:args.top_n][['std_id','int_index']] #exclude students who have no 2nd major or advanced major
     
   
-    del final_index
+    del final_index #필요없는 df삭제
     print(final_in)
    
     final_in.to_csv("itd_index_"+datetime.now().strftime("%Y-%m-%d")+".txt", sep='\t', index=False) #csv저장
