@@ -1,16 +1,11 @@
 __author__: Jinsook Lee
 import pandas as pd
-import numpy as np
 import argparse
-import scipy.sparse as sps
-import os
 import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.INFO)
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 import psycopg2 as pg
-import pickle
-import gzip
 from datetime import datetime
 
 
@@ -165,23 +160,23 @@ def main(args):
 
     gpa = map_dept_cd(gpa, mapping, 'major_cd')
     gpa = map_dept_cd(gpa, mapping, 'dept_cd')
-    
-    final_index = pd.DataFrame(columns=['std_id','gpa','credit','dist','int_index'])
-    #해마다 계산위해 cal_index_by_yr 반복
+
+    final_index = pd.DataFrame(columns=['std_id', 'gpa', 'credit', 'dist', 'int_index'])
     for i in tqdm(gpa.yr.unique().tolist()):
         data = cal_index_by_yr(gpa, i, -1)
-        final_index = final_index.append(data, ignore_index=True) 
-    
-    final_in = final_index.groupby('std_id').mean().sort_values(by='int_index', ascending=False).reset_index()
-    final_in = pd.merge(std, final_in).sort_values(by='int_index', ascending=False)
-    final_in = final_in[final_in['rec_sts'] =='재학'] #enrolled students filtering
-    final_in = final_in[~final_in['mmajor_nm'].isin(['다전공없음','심화전공'])].iloc[:args.top_n][['std_id','int_index']] #exclude students who have no 2nd major or advanced major
-    
-  
-    del final_index #필요없는 df삭제
+        final_index = final_index.append(data, ignore_index=True)
+
+    final_in = final_index.groupby('std_id').mean().sort_values(by='int_index', ascending=False).reset_index()[
+        ['std_id', 'int_index']].dropna(axis=0)
+    std = std[std['rec_sts'].isin(['재학', '휴학'])]
+    std = std[~std['mmajor_div'].isin(['다전공없음', '심화전공'])]
+    std = std[std['gpa1']>=3.8]
+    final_in = pd.merge(std, final_in, on='std_id', how='inner').sort_values(by='int_index',
+                                                                             ascending=False).drop_duplicates().iloc[:args.top_n] #top_n개 추출
+    del final_index
     print(final_in)
-   
-    final_in.to_csv("itd_index_"+datetime.now().strftime("%Y-%m-%d")+".txt", sep='\t', index=False) #csv저장
+    
+    final_in.to_csv("itd_index_"+datetime.now().strftime("%Y-%m-%d")+".txt", sep='\t', index=False)
     return final_in
 
 
